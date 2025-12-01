@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WebhookGenerateRequest {
     
-    @JsonProperty(" name ")
+    @JsonProperty("name")
     private String name;
     
-    @JsonProperty(" regNo ")
+    @JsonProperty("regNo")
     private String regNo;
     
-    @JsonProperty(" email ")
+    @JsonProperty("email")
     private String email;
 
     public WebhookGenerateRequest() {

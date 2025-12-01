@@ -78,9 +78,49 @@ java -jar target/webhook-solver-1.0.0.jar
 - JWT token is sent in the Authorization header as: `Bearer <accessToken>`
 - All operations are logged for debugging purposes
 
+## GitHub Setup for Submission
+
+See [GITHUB_SETUP.md](GITHUB_SETUP.md) for detailed instructions on:
+- Building the JAR file
+- Creating a public GitHub repository
+- Getting the raw download link for the JAR
+- Setting up releases
+
+### Quick Setup Commands
+
+```bash
+# Build JAR
+mvn clean package
+
+# Initialize Git
+git init
+git add .
+git commit -m "Initial commit"
+
+# Connect to GitHub (replace YOUR_USERNAME)
+git remote add origin https://github.com/YOUR_USERNAME/webhook-solver.git
+git branch -M main
+git push -u origin main
+```
+
+### JAR Download Links
+
+After pushing to GitHub, use one of these formats:
+
+**From main branch:**
+```
+https://raw.githubusercontent.com/YOUR_USERNAME/webhook-solver/main/target/webhook-solver-1.0.0.jar
+```
+
+**From releases (recommended):**
+```
+https://github.com/YOUR_USERNAME/webhook-solver/releases/download/v1.0.0/webhook-solver-1.0.0.jar
+```
+
 ## Next Steps
 
 1. Run the application to receive the SQL question
 2. Update the `solveQuestion1()` or `solveQuestion2()` method in `SqlSolverService.java` with your SQL solution
 3. The solution will be automatically submitted on the next run
+4. Follow the GitHub setup guide to create a public repository with the JAR file
 

@@ -44,34 +44,41 @@ public class SqlSolverService {
         logger.info("Question 1 details: {}", response.getQuestion());
         logger.info("Question 1 data: {}", response.getData());
         
-        // SQL Query Solution:
-        // 1. Filter out payments made on 1st day of month
-        // 2. Calculate total salary per employee (excluding 1st day payments)
-        // 3. Find maximum salary per department
-        // 4. Join with EMPLOYEE and DEPARTMENT tables
-        // 5. Calculate age from DOB
-        // 6. Format employee name as "FIRST_NAME LAST_NAME"
-        
+        // SQL Query as provided in requirements
         return "SELECT " +
                "    d.DEPARTMENT_NAME, " +
-               "    emp_salary.total_salary AS SALARY, " +
-               "    CONCAT(emp.FIRST_NAME, ' ', emp.LAST_NAME) AS EMPLOYEE_NAME, " +
-               "    TIMESTAMPDIFF(YEAR, emp.DOB, CURDATE()) AS AGE " +
+               "    t.max_salary AS SALARY, " +
+               "    CONCAT(e.FIRST_NAME, ' ', e.LAST_NAME) AS EMPLOYEE_NAME, " +
+               "    FLOOR(DATEDIFF(CURDATE(), e.DOB) / 365) AS AGE " +
                "FROM ( " +
                "    SELECT " +
-               "        e.DEPARTMENT, " +
+               "        emp.DEPT_ID, " +
                "        p.EMP_ID, " +
-               "        SUM(p.AMOUNT) AS total_salary, " +
-               "        ROW_NUMBER() OVER (PARTITION BY e.DEPARTMENT ORDER BY SUM(p.AMOUNT) DESC) AS rn " +
+               "        MAX(p.AMOUNT) AS max_salary " +
                "    FROM PAYMENTS p " +
-               "    INNER JOIN EMPLOYEE e ON p.EMP_ID = e.EMP_ID " +
-               "    WHERE DAY(p.PAYMENT_TIME) != 1 " +
-               "    GROUP BY e.DEPARTMENT, p.EMP_ID " +
-               ") emp_salary " +
-               "INNER JOIN EMPLOYEE emp ON emp_salary.EMP_ID = emp.EMP_ID " +
-               "INNER JOIN DEPARTMENT d ON emp.DEPARTMENT = d.DEPARTMENT_ID " +
-               "WHERE emp_salary.rn = 1 " +
-               "ORDER BY d.DEPARTMENT_NAME;";
+               "    JOIN EMPLOYEE emp ON emp.EMP_ID = p.EMP_ID " +
+               "    WHERE DAY(p.PAYMENT_TIME) <> 1 " +
+               "    GROUP BY emp.DEPT_ID, p.EMP_ID " +
+               ") t " +
+               "JOIN ( " +
+               "    SELECT " +
+               "        DEPT_ID, " +
+               "        MAX(max_salary) AS highest_salary " +
+               "    FROM ( " +
+               "        SELECT " +
+               "            emp.DEPT_ID, " +
+               "            p.EMP_ID, " +
+               "            MAX(p.AMOUNT) AS max_salary " +
+               "        FROM PAYMENTS p " +
+               "        JOIN EMPLOYEE emp ON emp.EMP_ID = p.EMP_ID " +
+               "        WHERE DAY(p.PAYMENT_TIME) <> 1 " +
+               "        GROUP BY emp.DEPT_ID, p.EMP_ID " +
+               "    ) s " +
+               "    GROUP BY DEPT_ID " +
+               ") m " +
+               "    ON t.DEPT_ID = m.DEPT_ID AND t.max_salary = m.highest_salary " +
+               "JOIN EMPLOYEE e ON e.EMP_ID = t.EMP_ID " +
+               "JOIN DEPARTMENT d ON d.DEPARTMENT_ID = t.DEPT_ID;";
     }
 
     private String solveQuestion2(WebhookGenerateResponse response) {

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WebhookSubmitRequest {
     
-    @JsonProperty("finalQuery")
+    @JsonProperty(" finalQuery ")
     private String finalQuery;
 
     public WebhookSubmitRequest() {
